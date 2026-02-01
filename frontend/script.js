@@ -2,24 +2,32 @@
 let chatHistory = []; 
 let selectedText = "";
 let selectedRange = null; 
-
-// New: Store the specific context text for each window ID
 let windowContexts = {}; 
 
 /* --- SETUP ENTER KEY LISTENER --- */
-// Function to make textareas handle Enter vs Shift+Enter
 function setupEnterKey(textareaId, sendCallback) {
     const textarea = document.getElementById(textareaId);
     textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault(); // Prevent new line
-            sendCallback(); // Trigger send
+            e.preventDefault(); 
+            sendCallback(); 
         }
     });
 }
 
-// Setup Main Input immediately
 setupEnterKey('main-input', handleMainSend);
+
+/* --- THEME TOGGLE LOGIC --- */
+function toggleTheme() {
+    const body = document.body;
+    const btnIcon = document.querySelector('#theme-toggle span');
+    body.classList.toggle('dark-mode');
+    if (body.classList.contains('dark-mode')) {
+        btnIcon.textContent = 'light_mode'; 
+    } else {
+        btnIcon.textContent = 'dark_mode'; 
+    }
+}
 
 /* --- SELECTION LOGIC --- */
 document.addEventListener('mouseup', (event) => {
@@ -76,7 +84,6 @@ function openMicroWindow() {
     selectedRange.deleteContents();
     selectedRange.insertNode(span);
 
-    // Save context for this specific window
     windowContexts[windowId] = selectedText;
 
     createFloatingWindow(windowId, selectedText);
@@ -91,7 +98,6 @@ function createFloatingWindow(id, title) {
     win.style.left = `${300 + Math.random() * 50}px`;
     win.style.top = `${100 + Math.random() * 50}px`;
 
-    // Note: We used textarea in the footer now
     win.innerHTML = `
         <div class="mw-header" onmousedown="startDrag(event, '${id}')">
             <span>Context: ${title.substring(0, 15)}...</span>
@@ -109,8 +115,6 @@ function createFloatingWindow(id, title) {
     `;
 
     floatingLayer.appendChild(win);
-    
-    // Setup Enter key for this new window's textarea
     setupEnterKey(`${id}-input`, () => handleMicroSend(id));
 }
 
@@ -143,7 +147,6 @@ document.addEventListener('mouseup', () => { isDragging = false; currentDragWin 
 
 /* --- CHAT LOGIC --- */
 
-// 1. Send from Main
 async function handleMainSend() {
     const input = document.getElementById('main-input');
     const text = input.value.trim();
@@ -152,35 +155,28 @@ async function handleMainSend() {
     addMessageToUI('main-chat-box', text, 'user-message');
     input.value = '';
     
-    // Send raw text to backend
     await sendToBackend(text, 'main-chat-box');
 }
 
-// 2. Send from Micro
 async function handleMicroSend(windowId) {
     const input = document.getElementById(`${windowId}-input`);
     const userQuery = input.value.trim();
     if (!userQuery) return;
 
-    // A. Display ONLY the user's question in the UI (Clean)
     addMessageToUI(`${windowId}-body`, userQuery, 'user-message');
     input.value = '';
 
-    // B. Construct the Backend Prompt (Inject Context)
-    // We explicitly tell Gemini what "this" refers to.
     const context = windowContexts[windowId] || "";
     const backendPrompt = `CONTEXT: "${context}"\n\nUSER QUESTION: ${userQuery}`;
 
-    // C. Send the detailed prompt to backend
     await sendToBackend(backendPrompt, `${windowId}-body`);
 }
 
-// 3. Shared Backend Function
 async function sendToBackend(messageToSend, targetContainerId) {
     const loadingId = addMessageToUI(targetContainerId, 'Thinking...', 'model-message');
 
     try {
-        const response = await fetch('/chat', {
+        const response = await fetch('http://127.0.0.1:8000/chat', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -191,13 +187,10 @@ async function sendToBackend(messageToSend, targetContainerId) {
 
         const data = await response.json();
         
-        // Update history
         chatHistory.push({ role: "user", content: messageToSend });
         chatHistory.push({ role: "model", content: data.response });
 
-        // Update UI with Markdown Parsed text
         const msgDiv = document.getElementById(loadingId);
-        // marked.parse comes from the library we added in index.html
         msgDiv.innerHTML = marked.parse(data.response); 
 
     } catch (err) {
@@ -211,14 +204,9 @@ function addMessageToUI(containerId, text, className) {
     const div = document.createElement('div');
     div.className = `message ${className}`;
     
-    // Default to plain text for user messages to prevent HTML injection
-    // But for 'Thinking...' we just set text
     if (text === 'Thinking...') {
         div.textContent = text;
     } else {
-        // If it's a user message, we usually just show text.
-        // If it's a model message, we will update it later with innerHTML.
-        // For now, let's just use simple text content initially.
         div.innerHTML = marked.parse(text); 
     }
 
@@ -226,20 +214,4 @@ function addMessageToUI(containerId, text, className) {
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
     return div.id;
-}
-
-/* --- THEME TOGGLE LOGIC --- */
-function toggleTheme() {
-    const body = document.body;
-    const btnIcon = document.querySelector('#theme-toggle span');
-    
-    // Toggle class
-    body.classList.toggle('dark-mode');
-    
-    // Update Icon
-    if (body.classList.contains('dark-mode')) {
-        btnIcon.textContent = 'light_mode'; // Sun icon
-    } else {
-        btnIcon.textContent = 'dark_mode'; // Moon icon
-    }
 }

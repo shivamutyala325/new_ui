@@ -1,10 +1,10 @@
-/* --- THEME VARIABLES (Light Mode Default) --- */
+/* --- THEME VARIABLES --- */
 :root {
     --bg-color: #f0f2f5;
     --container-bg: #ffffff;
     --text-primary: #1c1e21;
     --text-secondary: #65676b;
-    --accent-color: #6200ea; /* Deep Purple */
+    --accent-color: #6200ea;
     --accent-hover: #3700b3;
     --user-msg-bg: #6200ea;
     --user-msg-text: #ffffff;
@@ -17,7 +17,6 @@
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* --- DARK MODE OVERRIDES --- */
 body.dark-mode {
     --bg-color: #18191a;
     --container-bg: #242526;
@@ -26,11 +25,11 @@ body.dark-mode {
     --accent-color: #bb86fc;
     --accent-hover: #9965f4;
     --user-msg-bg: #bb86fc;
-    --user-msg-text: #121212; /* Dark text on light purple */
+    --user-msg-text: #121212;
     --model-msg-bg: #3a3b3c;
     --model-msg-text: #e4e6eb;
     --border-color: #3e4042;
-    --highlight-bg: #4a4a28; /* Darker yellow */
+    --highlight-bg: #4a4a28;
     --highlight-border: #d4a017;
 }
 
@@ -45,10 +44,9 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* --- MAIN CONTAINER (WIDER NOW) --- */
 .main-container {
-    width: 900px; /* Much wider */
-    max-width: 95%; /* Responsive on smaller screens */
+    width: 900px;
+    max-width: 95%;
     height: 100vh;
     margin: 0 auto;
     background: var(--container-bg);
@@ -66,13 +64,7 @@ header {
     align-items: center;
 }
 
-.logo-area {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--accent-color);
-}
-
+.logo-area { display: flex; align-items: center; gap: 10px; color: var(--accent-color); }
 .logo-icon { font-size: 28px; }
 h1 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary); }
 
@@ -87,7 +79,6 @@ h1 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary); }
 }
 .icon-btn:hover { background-color: var(--model-msg-bg); color: var(--text-primary); }
 
-/* --- CHAT AREA --- */
 .chat-area {
     flex: 1;
     padding: 20px;
@@ -97,7 +88,6 @@ h1 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary); }
     gap: 20px;
 }
 
-/* --- MESSAGES --- */
 .message {
     padding: 12px 18px;
     border-radius: 18px;
@@ -115,7 +105,6 @@ h1 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary); }
     color: var(--user-msg-text);
     border-bottom-right-radius: 4px;
 }
-/* Fix code blocks in user msg */
 .user-message code { background: rgba(0,0,0,0.2); }
 
 .model-message {
@@ -127,7 +116,6 @@ h1 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary); }
 .model-message code { background: rgba(0,0,0,0.05); }
 body.dark-mode .model-message code { background: rgba(255,255,255,0.1); }
 
-/* Markdown Styles inside messages */
 .message p { margin: 0 0 8px 0; }
 .message p:last-child { margin: 0; }
 .message pre {
@@ -139,7 +127,6 @@ body.dark-mode .model-message code { background: rgba(255,255,255,0.1); }
     border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* --- INPUT AREA --- */
 .input-area {
     padding: 20px;
     background-color: var(--container-bg);
@@ -179,7 +166,7 @@ textarea:focus { border-color: var(--accent-color); }
 }
 #send-btn:hover { background-color: var(--accent-hover); }
 
-/* --- MICRO WINDOWS & POPUPS --- */
+/* --- SELECTION & WINDOWS --- */
 .selection-menu {
     position: absolute;
     background: var(--container-bg);
@@ -209,7 +196,7 @@ textarea:focus { border-color: var(--accent-color); }
 .highlight-link {
     background-color: var(--highlight-bg);
     border-bottom: 2px solid var(--highlight-border);
-    color: var(--text-primary); /* Keeps text readable in dark mode */
+    color: var(--text-primary);
     cursor: pointer;
     font-weight: 600;
     padding: 0 2px;
@@ -265,7 +252,6 @@ textarea:focus { border-color: var(--accent-color); }
     gap: 8px;
 }
 
-/* Scrollbar styling for a cleaner look */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #bbb; border-radius: 4px; }
