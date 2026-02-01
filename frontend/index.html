@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inline Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <div class="main-container">
+        <header>
+            <div class="logo-area">
+                <span class="material-icons logo-icon">chat_bubble_outline</span>
+                <h1>Inline Chat</h1>
+            </div>
+            <button id="theme-toggle" class="icon-btn" onclick="toggleTheme()">
+                <span class="material-icons">dark_mode</span>
+            </button>
+        </header>
+        
+        <div id="main-chat-box" class="chat-area">
+            <div class="message model-message">
+                <p>Hello! I am your Inline Assistant. Highlight any text to dive deeper!</p>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <textarea id="main-input" rows="1" placeholder="Type a message..."></textarea>
+            <button id="send-btn" onclick="handleMainSend()">
+                <span class="material-icons">send</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="selection-menu" class="selection-menu hidden">
+        <button onclick="continueInMain()">
+            <span class="material-icons">forum</span> Continue in Main
+        </button>
+        <button onclick="openMicroWindow()">
+            <span class="material-icons">open_in_new</span> Micro Window
+        </button>
+    </div>
+
+    <div id="floating-layer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
