@@ -1,47 +1,50 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from typing import List
 from app.services import get_gemini_response
+import os
 
 app = FastAPI()
 
-
+# --- CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins (for development only)
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-# --- Data Models (Validation) ---
-# This ensures the frontend sends data in the correct format
-class Message(BaseModel):
-    role: str  # 'user' or 'model'
-    content: str
 
-class ChatRequest(BaseModel):
-    history: List[Message] # Previous conversation
-    message: str           # New question
+# --- Serve Static Files (CSS/JS) ---
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # --- Routes ---
 
+# 1. Serve the HTML Interface at root URL
 @app.get("/")
-def read_root():
-    return {"status": "Backend is running"}
+async def read_root():
+    return FileResponse('app/static/index.html')
 
+class Message(BaseModel):
+    role: str 
+    content: str
+
+class ChatRequest(BaseModel):
+    history: List[Message]
+    message: str
+
+# 2. The Chat API
 @app.post("/chat")
 def chat_endpoint(request: ChatRequest):
     try:
-        # Pass data to our service logic
-        # request.history is automatically converted to a list of dicts
         response_text = get_gemini_response(
             [msg.dict() for msg in request.history], 
             request.message
         )
-        
         return {"response": response_text}
-    
     except Exception as e:
-        # If something goes wrong, send a proper error to frontend
+        print(f"Error: {e}") 
         raise HTTPException(status_code=500, detail=str(e))
